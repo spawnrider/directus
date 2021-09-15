@@ -6,7 +6,6 @@ import getDatabase from '../database';
 import env from '../env';
 import { InvalidCredentialsException } from '../exceptions';
 import asyncHandler from '../utils/async-handler';
-import isJWT from '../utils/is-jwt';
 import jwksClient from 'jwks-rsa'
 import logger from '../logger';
 import { UsersService } from '../services';
@@ -30,7 +29,7 @@ const authenticate: RequestHandler = asyncHandler(async (req, res, next) => {
 
 	const database = getDatabase();
 
-	if (isJWT(req.token)) {
+	if (isDirectusJWT(req.token)) {
 
 		/**
 		 * NOTE: Security Patch for creating / authorizing on-the-fly authenticated users from Microsoft Azure AD.
@@ -136,8 +135,8 @@ const authenticate: RequestHandler = asyncHandler(async (req, res, next) => {
 				req.accountability.admin = user.admin_access === true || user.admin_access == 1;
 				req.accountability.app = user.app_access === true || user.app_access == 1;
 				
-			} catch (err) {
-				logger.warn(err, `Issue with custom OAuth2 token. ${err.message}`);
+			} catch (err : any) {
+				logger.warn(`Issue with custom OAuth2 token. ${err.message}`);
 				throw new InvalidCredentialsException('OAuth Token invalid.');
 			}
 		} else {

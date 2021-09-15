@@ -25,7 +25,8 @@ export default function isDirectusJWT(string: string): boolean {
 	try {
 		JSON.parse(atob(parts[0]));
 		const payload = JSON.parse(atob(parts[1]));
-		if (payload.iss !== 'directus') return false;
+		// PATCH : don't check issuer here
+		// if (payload.iss !== 'directus') return false;
 	} catch {
 		return false;
 	}
