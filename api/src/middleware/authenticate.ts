@@ -11,6 +11,7 @@ import jwksClient from 'jwks-rsa'
 import logger from '../logger';
 import { UsersService } from '../services';
 import { getSchema } from '../utils/get-schema';
+import isDirectusJWT from '../utils/is-directus-jwt';
 
 /**
  * Verify the passed JWT and assign the user ID and role to `req`
@@ -144,7 +145,7 @@ const authenticate: RequestHandler = asyncHandler(async (req, res, next) => {
 			let payload: { id: string };
 
 			try {
-				payload = jwt.verify(req.token, env.SECRET as string) as { id: string };
+				payload = jwt.verify(req.token, env.SECRET as string, { issuer: 'directus' }) as { id: string };
 			} catch (err) {
 				if (err instanceof TokenExpiredError) {
 					throw new InvalidCredentialsException('Token expired.');

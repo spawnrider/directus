@@ -133,7 +133,11 @@ export class FieldsService {
 			return data;
 		}) as Field[];
 
-		const result = [...columnsWithSystem, ...aliasFieldsAsField];
+		const knownCollections = Object.keys(this.schema.collections);
+
+		const result = [...columnsWithSystem, ...aliasFieldsAsField].filter((field) =>
+			knownCollections.includes(field.collection)
+		);
 
 		// Filter the result so we only return the fields you have read access to
 		if (this.accountability && this.accountability.admin !== true) {
@@ -277,7 +281,7 @@ export class FieldsService {
 						if (!field.schema) return;
 						this.addColumnToTable(table, field, existingColumn);
 					});
-				} catch (err) {
+				} catch (err: any) {
 					throw await translateDatabaseError(err);
 				}
 			}
